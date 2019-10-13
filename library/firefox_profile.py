@@ -36,7 +36,7 @@ class FirefoxProfiles:
         self.config.read(self.profiles_ini)
         self.sections = OrderedDict()
         for section in self.config.sections():
-            if section != 'General':
+            if section.startswith('Profile'):
                 profile = dict(self.config.items(section))
                 self.sections[profile['Name']] = section
 
@@ -45,8 +45,9 @@ class FirefoxProfiles:
         new = ConfigParser.ConfigParser()
         new.optionxform = str
         new.add_section('General')
-        for item in self.config.items('General'):
-            new.set('General', item[0], item[1])
+        if 'General' in self.config.sections():
+            for item in self.config.items('General'):
+                new.set('General', item[0], item[1])
 
         index = 0
         for section in self.sections.values():
