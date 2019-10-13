@@ -58,10 +58,33 @@ class FirefoxProfiles:
             index += 1
 
         with open(self.profiles_ini, 'wb') as config_file:
-            new.write(FirefoxConfigWrapper(config_file))
+            self.config.write(FirefoxConfigWrapper(config_file))
 
         # Update state with the new file.
         self.read()
+
+    def update(self, name, default, locked):
+        # Set values for profile section
+        changed = False
+        for section in self.config.sections():
+            if section.startswith('Install'):
+                if default and self.config.get(section, 'Default') != name:
+                    self.config.set(section, 'Default', name)
+                    changed = True
+                if locked and self.config.get(section, 'Locked') != '1':
+                    self.config.set(section, 'Locked', '1')
+                    changed = True
+            elif section.startswith('Profile'):
+                if self.config.get(section, 'Name') == name:
+                    if default:
+                        if self.config.has_option(section, 'Default') and self.config.set(section, 'Default') != 1:
+                            changed = True
+                        elif not self.config.has_option(section, 'Default'):
+                            changed = True
+                        self.config.set(section, 'Default', '1')
+                elif self.config.get(section, 'Name') != name and self.config.has_option(section, 'Default') and self.config.get(section, 'Default') == '1':
+                    self.config.remove_option(section, 'Default')
+        self.write()
 
     def get(self, name):
         if name in self.sections:
@@ -100,10 +123,14 @@ def main():
             'choices': ['present', 'absent'],
             'type': 'str',
         },
+        'default': {'default': True, 'type': 'bool'},
+        'locked': {'default': True, 'type': 'bool'},
     }
     module = AnsibleModule(argument_spec=fields)
     profiles = FirefoxProfiles(module.params['path'])
     name = module.params['name']
+    default = module.params['default']
+    locked = module.params['locked']
     path = profiles.get_path(name)
     changed = False
     if module.params['state'] == 'present' and profiles.get(name) is None:
@@ -113,7 +140,9 @@ def main():
     elif module.params['state'] == 'absent' and profiles.get(name) is not None:
         profiles.delete(name)
         changed = True
-    module.exit_json(changed=changed, profile_name=name, profile_path=path)
+    profiles.update(name, default, locked)
+    changed = True
+    module.exit_json(changed=changed, profile_name=name, profile_path=path, default=default, locked=locked)
 
 
 if __name__ == '__main__':
