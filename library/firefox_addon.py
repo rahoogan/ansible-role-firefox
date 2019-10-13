@@ -46,16 +46,8 @@ class FirefoxExtension:
             else:
                 hash_type, hashstr = file_hash.split(':')
  
-            if hash_type == 'sha256':
-                computed_hash = hashlib.sha256()
-            elif hash_type == 'sha224':
-                computed_hash = hashlib.sha224()
-            elif hash_type == 'sha384':
-                computed_hash = hashlib.sha384()
-            elif hash_type == 'sha512':
-                computed_hash = hashlib.sha512()
-            elif hash_type == 'sha1':
-                computed_hash = hashlib.sha1()
+            if hasattr(hashlib, hash_type) and callable(getattr(hashlib, hash_type)):
+                computed_hash = getattr(hashlib, hash_type)()
             else:
                 raise Exception('Unsupported hash type (%s) found when verifying add on: %s' % (hash_type, self.slug))
 
