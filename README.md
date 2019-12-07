@@ -1,3 +1,13 @@
+# NOTICE
+This repo has been forked from: https://github.com/rahoogan/ansible-role-firefox.git, which is covered under the GPLv2 license. The README below is from the original source.
+
+This repo redistributes the original source with the following modifications under the GPLv2 license:
+- Update addon API to v4
+- Adds hash verification for all addons before installation
+- Adds a hardened and customised user.js modified from https://github.com/pyllyukko/user.js (under the MIT License)
+
+Modified by Rahul Raghavan (2019)
+
 # Ansible Role: Firefox
 
 Installs firefox and optionally creates profiles with extensions.
