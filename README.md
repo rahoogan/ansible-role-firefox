@@ -1,5 +1,5 @@
 # NOTICE
-This repo has been forked from: https://github.com/rahoogan/ansible-role-firefox.git, which is covered under the GPLv2 license. The README below is from the original source.
+This repo has been forked from: https://github.com/unrblt/ansible-role-firefox, which is covered under the GPLv2 license. The README below is from the original source.
 
 This repo redistributes the original source with the following modifications under the GPLv2 license:
 - Update addon API to v4
